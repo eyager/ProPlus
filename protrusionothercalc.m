@@ -1,13 +1,12 @@
 function [medianp,percentile10p]=protrusionothercalc(proinputs,bedstd,b84,ptCloud,grain) 
-%% Function to calculate protrusion for each grain on the bed using outputs from G3Point and a Point Cloud 
+%% Function to calculate protrusion for each grain on the bed using outputs from other software and a Point Cloud 
 %Two variables are output from this function: percentile10p, which is the protrusion
 %calculated using the 10th percentile of the surrounding bed elevation and
 %is used in driving force equations for critical shear stress calculations;
 %medianp,which is the protrusion calculated using the 10th percentile of 
 %the surrounding bed elevation and is used in resisting force equations 
-%for critical shear stress calculations. This code could be modified to
-%calcualte protrusion using other inputs such as grain perimeters from
-%machine learning applications
+%for critical shear stress calculations. This uses a detrended point cloud and inputs from other
+%software or manually determined grain diameters and grain perimeters. 
 %% Determine what search radius defintion to use based on user input
 if proinputs.whichradius==1 
     search_radius=bedstd;

@@ -5,9 +5,9 @@ function [medianp,percentile10p]=protrusionG3calc(proinputs,bedstd,b84,ptCloud,l
 %is used in driving force equations for critical shear stress calculations;
 %medianp,which is the protrusion calculated using the 10th percentile of 
 %the surrounding bed elevation and is used in resisting force equations 
-%for critical shear stress calculations. This code could be modified to
-%calcualte protrusion using other inputs such as grain perimeters from
-%machine learning applications
+%for critical shear stress calculations. This uses inputs from G3Point of
+%the detrended point cloud, the grain diameter, the grains that are well fit by
+%ellipsoids, and the point cloud of each grain. 
 %% Determine what search radius defintion to use based on user input
 if proinputs.whichradius==1 
     search_radius=bedstd;
