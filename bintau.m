@@ -1,4 +1,4 @@
-function [Binned, bbins]=bintau(b,pD,pR,b_dist,pD_dist,pR_dist,taucr_dist,taustcr_dist,proinputs)
+function [Binned, bbinmean,bbins]=bintau(b,pD,pR,b_dist,pD_dist,pR_dist,taucr_dist,taustcr_dist,proinputs)
 %% USER NOTE
 %Code to take estimated critical shear stresses from taucrcalc and estimated
 %protrusion values from protrusioncalc and dividethem into 
@@ -7,7 +7,7 @@ function [Binned, bbins]=bintau(b,pD,pR,b_dist,pD_dist,pR_dist,taucr_dist,taustc
 %Use this code at your own risk and modifications may be needed for your
 %specific application. If you encounter errors in the code please tell
 %Elowyn Yager (eyager@uidaho.edu).  Code written by Elowyn Yager and last
-%modified on 4/5/2023.
+%modified on 11/15/2023.
 %% SET UP GRAIN SIZE BINS AND STRUCTURE FOR VARIABLES FOR EACH GRAIN SIZE BIN
 disp('--- BINNING CRITICAL SHEAR STRESSES AND PROTRUSION BY GRAIN SIZE');
 phi=-1:proinputs.phistep:-11; %grain size bins determined for 
@@ -15,6 +15,7 @@ bbins=(2.^(-phi))./1000; %grain size bins in units of meters. Bins range
     %in size from 0.002 m (lowest size recommended to use in Pro+) to 2.048
     %m. If larger boulders are desired in the distribution, the phi range
     %can be changed. 
+bbinmean=geomean([bbins(1:end-1); bbins(2:end)]); %geometric mean of each grain size bin    
     
 %eliminate critical shear stresses and cooresponding protrusion values
 %for which estimated critical shear stresses could not be calculated (i.e.
@@ -52,10 +53,10 @@ clear svalue1 svalue2
 %% BIN CRITICAL SHEAR STRESSES AND PROTRUSIONS BY GRAIN SIZE BIN
 %binned critical shear stresses
 for j=1:nanmax(indtaucr)
-    Binned.taucri(j,1:numel(b(indtaucr==j)))=taucr_dist(indtaucr==j);
-    Binned.taustcri(j,1:numel(b(indtaucr==j)))=taustcr_dist(indtaucr==j);
-    Binned.pDi_for_taucri(j,1:numel(b(indtaucr==j)))=pD_dist(indtaucr==j);
-    Binned.pRi_for_taucri(j,1:numel(b(indtaucr==j)))=pR_dist(indtaucr==j);
+    Binned.taucri(j,1:numel(b_dist(indtaucr==j)))=taucr_dist(indtaucr==j);
+    Binned.taustcri(j,1:numel(b_dist(indtaucr==j)))=taustcr_dist(indtaucr==j);
+    Binned.pDi_for_taucri(j,1:numel(b_dist(indtaucr==j)))=pD_dist(indtaucr==j);
+    Binned.pRi_for_taucri(j,1:numel(b_dist(indtaucr==j)))=pR_dist(indtaucr==j);
 end
 %binned protrusions
 for j=1:nanmax(indp)

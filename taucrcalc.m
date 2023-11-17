@@ -5,7 +5,7 @@ function [FrWt_dist,taucr_dist,taustcr_dist,phif_mean_real,phif_std_real,b_dist,
 %Use this code at your own risk and modifications may be needed for your
 %specific application. If you encounter errors in the code please tell
 %Elowyn Yager (eyager@uidaho.edu).  Code written by Elowyn Yager and last
-%modified on 4/5/2023.
+%modified on 11/15/2023.
 %% OUTPUT VARIABLES
 %thetaf_mean_real: actual mean of the thetaf distribution employed, which
     %may differ from the originally input thetaf_mean value (see below for
@@ -48,7 +48,6 @@ Vgrain=(4./3).*pi.*(r.^3); %volume of each particle (assumed spheres)
 Wt=(proinputs.rhos-proinputs.rho).*proinputs.g.*Vgrain; %submerged particle weight
 indpR=find(pR>b);pR(indpR)=b(indpR);%set the resisting protrusion equal to the grain diameter 
  %if protrusion exceeds the grain diameter 
-pR(pR<=0)=0;%set resisting protrusion equalto zero if protrusion is negative.
 pR(pR<=0)=0;%set resisting protrusion equalto zero if protrusion is negative.
 %% CALCULATE BASIC BED/FLOW VARIABLES
 pore=1-proinputs.porosity; %One minus the bed porosity (packing fraction)
@@ -202,6 +201,13 @@ for i=1:length(b) %first for loop for calculations that only rely on each grain 
     
         %third loop to calculate variables that depend on thetaf
         for k=1:length(phif)
+            %phif(k)=(39.*(b(i).^(-0.155)))*(pi/180);
+            %phif(k)=(-491.53.*b(i)+ 91.458)*(pi/180);
+            %phimean=(-491.53.*b(i)+ 91.458)*(pi/180);
+            %phif(k)=normrnd(phimean,pi.*proinputs.stdphif./180,proinputs.numphif,1);
+            %phif(tan(phif(k))<0)=NaN; %eliminate any thetaf >= 90 degrees  
+            
+            
             % submerged force from intergranular friction of surrounding sediment (eqn 5 in
             %Yager et al., 2018; named Fd in paper but has been renamed as
             %Fsed here to avoid confusion with the drag force below).

@@ -15,8 +15,10 @@ elseif proinputs.whichradius==2
     search_radius=b84;
 elseif proinputs.whichradius==3
     search_radius=proinputs.setradius;
+elseif proinputs.whichradius==4
+    search_radius=NaN; 
 else
-    disp('error, need to enter search radius choice between 1-3')
+    disp('error, need to enter search radius choice between 1-4')
 end
 %% CALCULATE PROTRUSION FOR EACH GRAIN
 disp('--- CALCULATING PROTRUSION')
@@ -51,18 +53,22 @@ countgrains=1;counter=1;
         ptCloud_search=pointCloud([ptCloud.Location(indno,1),ptCloud.Location(indno,2),zeros(length(indno),1)]);
         ptCloud_outside=pointCloud([ptCloud.Location(indno,1),ptCloud.Location(indno,2),ptCloud.Location(indno,3)]);
         
+        if proinputs.whichradius==4
+            ptCloudprotrusion=ptCloud_outside;
+        else
         %search the point cloud to find points that are within a certain radius (x and y) of
         %every proinputs.perimpoint spacing of points on the perimeter of the grain of interest
-        indcircle=NaN.*ones(500000,length(boundind));
-        for pp=1:proinputs.perimpoints:length(boundind)      
-            [indcircled,~] = findNeighborsInRadius(ptCloud_search,[xbound(pp),ybound(pp),zbound(pp)],search_radius);
-            indcircle(1:numel(indcircled),pp)=indcircled;
-        end
-        indcircle=reshape(indcircle,size(indcircle,1)*size(indcircle,2),1);indcircle(isnan(indcircle))=[];
+            indcircle=NaN.*ones(500000,length(boundind));
+            for pp=1:proinputs.perimpoints:length(boundind)      
+                [indcircled,~] = findNeighborsInRadius(ptCloud_search,[xbound(pp),ybound(pp),zbound(pp)],search_radius);
+                indcircle(1:numel(indcircled),pp)=indcircled;
+            end
+            indcircle=reshape(indcircle,size(indcircle,1)*size(indcircle,2),1);indcircle(isnan(indcircle))=[];
         
         %use these points within the specified radius to calculate
         %protrusion and upstream and downstream protrusion
-        ptCloudprotrusion = select(ptCloud_outside,unique(indcircle));
+            ptCloudprotrusion = select(ptCloud_outside,unique(indcircle));
+        end
         medianp(countgrains)=graintop-median(ptCloudprotrusion.Location(:,3));
         percentile10p(countgrains)=graintop-prctile(ptCloudprotrusion.Location(:,3),10);
         countgrains=countgrains+1;percom=round((j/nlabels)*100);

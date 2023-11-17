@@ -6,18 +6,31 @@ function [proinputs]=defineinputs
 %% If the .csv file exists, then read the input variables for Pro+ from the input file
 if isfile('proinputs.csv')
     disp('--- READING PRO+ INPUT VARIABLES FROM INPUT FILES');
-    [proinputs.saveoutputs,proinputs.usepivot,proinputs.whichinput,proinputs.whichks, proinputs.whichradius,...
+    [proinputs.inputfile,proinputs.outputfile,proinputs.saveoutputs,proinputs.usepivot,...
+        proinputs.whichcalcs,proinputs.whichinput,proinputs.whichks, proinputs.whichradius,...
         proinputs.setks,proinputs.setradius,proinputs.perimpoints,proinputs.meanphif,...
         proinputs.stdphif, proinputs.numphif,proinputs.phistep, proinputs.rhos,...
         proinputs.rho,proinputs.porosity,proinputs.Cd,proinputs.Cl,proinputs.Cv,...
         proinputs.K,proinputs.g]=...
         readvars('proinputs.csv');
         %readvars([param.ptCloudpathname 'proinputs.csv']);
+    %INPUT VARIABLES WITH FILE NAMES
+    %inputfile: input file name (e.g., inputs.mat) that must be a .mat file and where
+        %the required input variable names within the file depend on whether
+        %using G3Point or other software to provide the estimated input
+        %variables (see below and user manual for details on these variables
+    %outputfile: output file name of output variables calculated by Pro+,
+        %details on these variables is provided in the user manual
     %INPUT VARIABLES WITH CHOICE OF YES (1) OR NO (0)
     %saveoutputs: Specifies whether to save the protrusion and critical 
         %shear stress outputs (=1) or not (=0
     %usepivot: Specifies whether to include the pivot angle (=1) or not (=0)
         %include pivot angle in critical shear stress calculations
+    %usepivot: Specifies whether to complete the protrusion calculations (=1) or not (=0)
+        %Zero can only be chosen if you have already completed the protrusion calculations
+        %by preivously running Pro+ with the same data. Pro+ will
+        %automatically load these previously calculated values for you to
+        %complete the critical shear stress calculations again
     %INPUT VARIABLES WITH CHOICE OF TWO TO THREE DIFFERENT OPTIONS (1,2,3) 
     %whichinput: Specifies the method of inputing the necessary grain
         %variables for protrusion calculations. G3Point (=1) supplies grain
@@ -30,12 +43,13 @@ if isfile('proinputs.csv')
         %file are provided in the user manual. 
     %whichks: Specifies what ks value to use in critical shear stress
         %calculations: the standard deviation of bed elevations from the 
-        %point cloud (=1) or the calculated 84th percentile of the grain 
-        %size distribution b84 (=2)
+        %point cloud (=1), the calculated 84th percentile of the grain 
+        %size distribution b84 (=2), or a user defined value (=3)
     %whichradius: Specifies what search radius  to use in protrusion
         %calculations: the standard deviation of bed elevations from the 
-        %point cloud (=1), the calculated 84th percentile of the grain 
-        %size distribution b84 (=2), or a user specfied value (=3)
+        %point cloud (=1),the calculated 84th percentile of the grain 
+        %size distribution b84 (=2), a user specfied value (=3), or just use the
+        %entire bed outside of the grain of interest (not recommended)
     %OPTIONAL INPUT VARIABLES WITH USER SET VALUES 
     %setradius: Specifies the user defined value for the search radius to
         %use when this option (3) is chosen for whichradius. Enter a number in
@@ -95,8 +109,11 @@ if isfile('proinputs.csv')
  else
     disp('--- USING DEFAULT PRO+ INPUT VARIABLES FROM defineinputs.m');
     %see input variable defintions above
+    proinputs.iputfile=0;
+    proinputs.outputfile=0;
     proinputs.saveoutputs=0;
     proinputs.usepivot=0; 
+    proinputs.whichcalcs=1; 
     proinputs.whichinput=1;
     proinputs.whichks=1; 
     proinputs.whichradius=1; 

@@ -14,8 +14,10 @@ elseif proinputs.whichradius==2
     search_radius=b84;
 elseif proinputs.whichradius==3
     search_radius=proinputs.setradius;
+elseif proinputs.whichradius==4
+    search_radius=NaN;    
 else
-    disp('error, need to enter search radius choice between 1-3')
+    disp('error, need to enter search radius choice between 1-4')
 end
 %% CALCULATE PROTRUSION FOR EACH GRAIN
 disp('--- CALCULATING PROTRUSION')
@@ -25,7 +27,7 @@ percentile10p=NaN.*ones(numgrains,1);medianp=NaN.*ones(numgrains,1);
 
 %loop through all identified grains
 countgrains=1;counter=1;
-    for j=1:numgrains            
+    for j=1:numgrains   
         %find the point cloud for each grain using the specified perimeter
         [indin,indon]=inpolygon(ptCloud.Location(:,1),ptCloud.Location(:,2),grain(j).perim(:,1),grain(j).perim(:,2));
         %identify the top of each grain
@@ -38,18 +40,22 @@ countgrains=1;counter=1;
             ptCloud_outside=pointCloud([ptCloud.Location(~indin&~indon,1),ptCloud.Location(~indin&~indon,2),ptCloud.Location(~indin&~indon,3)]);
             ptCloud_search=pointCloud([ptCloud.Location(~indin&~indon,1),ptCloud.Location(~indin&~indon,2),zeros(length(ptCloud_outside.Location(:,3)),1)]);
         
+            if proinputs.whichradius==4
+                ptCloudprotrusion=ptCloud_outside;
+            else 
         %search the point cloud to find points that are within a certain radius (x and y) of
         %every proinputs.perimpoint spacing of points on the perimeter of the grain of interest
-            indcircle=NaN.*ones(500000,size(grain(j).perim,1));
-            for pp=1:proinputs.perimpoints:size(grain(j).perim,1)      
-                [indcircled,~] = findNeighborsInRadius(ptCloud_search,[grain(j).perim(pp,1),grain(j).perim(pp,2),0],search_radius);
-                indcircle(1:numel(indcircled),pp)=indcircled;
-            end
-            indcircle=reshape(indcircle,size(indcircle,1)*size(indcircle,2),1);indcircle(isnan(indcircle))=[];
+                indcircle=NaN.*ones(500000,size(grain(j).perim,1));
+                for pp=1:proinputs.perimpoints:size(grain(j).perim,1)      
+                    [indcircled,~] = findNeighborsInRadius(ptCloud_search,[grain(j).perim(pp,1),grain(j).perim(pp,2),0],search_radius);
+                    indcircle(1:numel(indcircled),pp)=indcircled;
+                end
+                indcircle=reshape(indcircle,size(indcircle,1)*size(indcircle,2),1);indcircle(isnan(indcircle))=[];
         
         %use these points within the specified radius to calculate
         %protrusion and upstream and downstream protrusion
-            ptCloudprotrusion = select(ptCloud_outside,unique(indcircle));
+                ptCloudprotrusion = select(ptCloud_outside,unique(indcircle));
+            end
             medianp(countgrains)=graintop-median(ptCloudprotrusion.Location(:,3));
             percentile10p(countgrains)=graintop-prctile(ptCloudprotrusion.Location(:,3),10);
             countgrains=countgrains+1; percom=round((j/numgrains)*100);
