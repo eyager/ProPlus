@@ -201,11 +201,8 @@ for i=1:length(b) %first for loop for calculations that only rely on each grain 
     
         %third loop to calculate variables that depend on thetaf
         for k=1:length(phif)
-            %phif(k)=(39.*(b(i).^(-0.155)))*(pi/180);
-            %phif(k)=(-491.53.*b(i)+ 91.458)*(pi/180);
-            %phimean=(-491.53.*b(i)+ 91.458)*(pi/180);
-            %phif(k)=normrnd(phimean,pi.*proinputs.stdphif./180,proinputs.numphif,1);
-            %phif(tan(phif(k))<0)=NaN; %eliminate any thetaf >= 90 degrees  
+            phif(k)=normrnd(phimean,pi.*proinputs.stdphif./180,proinputs.numphif,1);
+            phif(tan(phif(k))<0)=NaN; %eliminate any thetaf >= 90 degrees  
             
             
             % submerged force from intergranular friction of surrounding sediment (eqn 5 in
